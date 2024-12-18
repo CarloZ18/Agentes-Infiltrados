@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <math.h>
 using namespace std;
 
 //Variables
@@ -7,17 +8,17 @@ using namespace std;
 //Crear clase
 
 // Struct de las personas registradas
-struct personaRegistrada
+struct personas
 {
     string nombre;
-    string especia;
+    string especie;
     int altura;
     string capacidadMagica;
     float profundidadOjos;
     float distanciaEntreOjos;
-    int distaciaFrenteYNariz;
+    int distanciaFrenteYNariz;
     float distanciaNarizYLabioSuperior;
-};
+}persona;
 
 // Crear archivo
 void crearBaseDeDatos(string data)
@@ -75,23 +76,6 @@ int main()
 
 */
 
-# include <iostream>
-# include <math.h>
-using namespace std;
-
-
-struct personas{
-    char nombre[20];
-    char apellido[20];
-    char especie[20];
-    float altura;
-    bool magia;
-    float profundidadojos;
-    float distanciaojos;
-    float distanciafrenariz;
-    float distancianalabsu;
-
-}persona;
 
 int numpersonas;
 
@@ -102,16 +86,16 @@ int  validacion( personas persona1, personas persona2, int numpersonas, int cont
     if(persona1.altura==persona2.altura || persona1.altura<=persona1.altura+1 || persona1.altura>=persona2.altura-1){
         contador++;
     }
-    if(persona1.profundidadojos==persona2.profundidadojos){
+    if(persona1.profundidadOjos==persona2.profundidadOjos){
         contador++;
     }
-    if(persona1.distanciaojos==persona2.distanciaojos){
+    if(persona1.distanciaEntreOjos==persona2.distanciaEntreOjos){
         contador++;
     }
-    if(persona1.distanciafrenariz==persona2.distanciafrenariz){
+    if(persona1.distanciaFrenteYNariz==persona2.distanciaFrenteYNariz){
         contador++;
     }
-    if(persona1.distancianalabsu==persona2.distancianalabsu){
+    if(persona1.distanciaNarizYLabioSuperior==persona2.distanciaNarizYLabioSuperior){
         contador++;
     }
     
