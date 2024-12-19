@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <cmath>
 using namespace std;
 
 //Variables
@@ -12,13 +13,17 @@ struct personas
 {
     string nombre;
     string especie;
-    int altura;
-    string capacidadMagica;
+    float altura;
+    bool capacidadMagica;
     float profundidadOjos;
     float distanciaEntreOjos;
-    int distanciaFrenteYNariz;
+    float distanciaFrenteYNariz;
     float distanciaNarizYLabioSuperior;
 }persona;
+
+const int  error=0.05;
+int contadorcambiaformas=0;
+
 
 // Crear archivo
 void crearBaseDeDatos(string data)
@@ -64,51 +69,86 @@ string obtenerData(int personasRegistradas)
 {
 }
 
-int main()
-{
-
-    leerBaseDeDatos();
-    return 0;
-}
-
 /*detectar cambiaforma: no pueden alterar todo su estructura facial,no pueden alterar su altura mas de
 1 unidad de medida hacia arriba o abajo,cada 3 personas comparten como maximo 2 medidas faciales,
 
 */
 
 
-int numpersonas;
+int numpersonas,i=1,j=2;
 
-int  validacion( personas persona1, personas persona2, int numpersonas, int contador=0){
-    if(persona1.especie==persona2.especie){
+int  validacion( personas personai, personas personaj, int numpersonas, int contador=0,int contadorfacial=0,int i,int j ){
+    if(j==numpersonas){
+
+
+    }
+    
+    if(personai.especie==personaj.especie){
         contador++;
     }
-    if(persona1.altura==persona2.altura || persona1.altura<=persona1.altura+1 || persona1.altura>=persona2.altura-1){
+    if(personai.altura==personaj.altura || fabsf(personai.altura-personaj.altura)<=1.05){
         contador++;
     }
-    if(persona1.profundidadOjos==persona2.profundidadOjos){
+    if(personai.profundidadOjos==personaj.profundidadOjos ||
+     fabsf(personai.profundidadOjos-personaj.profundidadOjos)<=1.05){
+        contador++;
+        contadorfacial++;
+    }
+    if(personai.distanciaEntreOjos==personaj.distanciaEntreOjos || 
+    fabsf(personai.distanciaEntreOjos-personaj.distanciaEntreOjos)<=1.05){
+        contador++;
+        contadorfacial++;
+    }
+    if(personai.distanciaFrenteYNariz==personaj.distanciaFrenteYNariz || 
+    fabs(personai.distanciaFrenteYNariz-personaj.distanciaFrenteYNariz)<=1.05){
         contador++;
     }
-    if(persona1.distanciaEntreOjos==persona2.distanciaEntreOjos){
+    if(personai.distanciaNarizYLabioSuperior==personaj.distanciaNarizYLabioSuperior || 
+    fabsf(personai.distanciaNarizYLabioSuperior-personaj.distanciaNarizYLabioSuperior)<=1.05){
         contador++;
+        contadorfacial++;
     }
-    if(persona1.distanciaFrenteYNariz==persona2.distanciaFrenteYNariz){
-        contador++;
-    }
-    if(persona1.distanciaNarizYLabioSuperior==persona2.distanciaNarizYLabioSuperior){
-        contador++;
-    }
+
+    
     
 }
 
-bool posiblecambiaforma(int contador, personas persona1){
-    if(contador == 6 || contador<2){
+bool posiblecambiaforma(int contador, personas personai,int contadorfacial,int contadorposible=0){
+    if((contador == 6 || contador<2)&& contadorfacial==4){
         return false;
     }
-    if(contador==2 || (contador>2 && contador<6) ){
+    if((contador==2 || (contador>2 && contador<6))&& contadorfacial<4 ){
+        contadorposible+=1;
         return true;
+        
     }
 
 
+}
+
+bool escambiaforma(personas personai,int i,int j,int numpersonas,int contador,int contadorfacial,int contadorposible){
+    
+    if(j==numpersonas && contadorposible>=1){
+    contadorcambiaformas+=1;
+    cout<<personai.nombre<<endl;
+    return validacion(persona,persona,numpersonas, i+1,j);
+    return true;
+    }
+    else{
+       if(posiblecambiaforma(contador,personai,contadorfacial)==true){
+         validacion(persona,persona,numpersonas,contador=0,i,j+1);
+
+    }
+    }
+   
+};
+
+
+
+int main()
+{
+
+    leerBaseDeDatos();
+    return 0;
 }
 
