@@ -21,8 +21,10 @@ struct personas
     float distanciaNarizYLabioSuperior;
 }persona;
 
-const int  error=0.05;
-int contadorcambiaformas=0;
+const int  error=0.05;//esto es global poque es el porcentaje de error
+int contadorcambiaformas=0;//y este tambien global porque en la cantidad en general
+
+char *arr=new char [numpersonas];//segun yo arreglo donde se va a guardar los nombres a los que cambia 
 
 
 // Crear archivo
@@ -75,7 +77,8 @@ string obtenerData(int personasRegistradas)
 */
 
 
-int numpersonas,i=1,j=2;
+int numpersonas,i=1,j=2;//aqui esto son globales porque deben empezar ahi
+//funcion que valida que tantas cosas iguales tienen 2 personas
 
 int  validacion( personas personai, personas personaj, int numpersonas, int contador=0,int contadorfacial=0,int i,int j ){
     if(j==numpersonas){
@@ -112,9 +115,10 @@ int  validacion( personas personai, personas personaj, int numpersonas, int cont
     
     
 }
+//funcion que depende de que tantas cosas iguales tenga descarta si puede se un  cambiaformas o no 
 
 bool posiblecambiaforma(int contador, personas personai,int contadorfacial,int contadorposible=0){
-    if((contador == 6 || contador<2)&& contadorfacial==4){
+    if(contador<2 && contadorfacial==4){
         return false;
     }
     if((contador==2 || (contador>2 && contador<6))&& contadorfacial<4 ){
@@ -125,21 +129,38 @@ bool posiblecambiaforma(int contador, personas personai,int contadorfacial,int c
 
 
 }
-
-bool escambiaforma(personas personai,int i,int j,int numpersonas,int contador,int contadorfacial,int contadorposible){
-    
-    if(j==numpersonas && contadorposible>=1){
-    contadorcambiaformas+=1;
+//funcion que imprime el cambiaformas original y en que se convierte (solo los parametros)
+void imprimircambiaforma(personas personai,personas personaj,int i ,int j,char*arr){
     cout<<personai.nombre<<endl;
-    return validacion(persona,persona,numpersonas, i+1,j);
-    return true;
+    for(int k=0;k<j;k++){
+        cout<<"hola"<<endl;
     }
-    else{
-       if(posiblecambiaforma(contador,personai,contadorfacial)==true){
-         validacion(persona,persona,numpersonas,contador=0,i,j+1);
+}
 
+//se supone que este es el backtracking que define si es cambiaforma o no
+
+void escambiaforma(personas personai,int i,int j,int numpersonas,int contador,int contadorfacial,int contadorposible){
+    if(i==numpersonas){
+        cout<< contadorcambiaformas<<endl;
+        return;
     }
-    }
+
+    for(int k=j; k<=numpersonas; k++){
+        if(posiblecambiaforma(contador,personai,contadorfacial,contadorposible)==true){
+            validacion(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
+            contadorcambiaformas+=1;
+            imprimircambiaforma(persona,persona,i,j,arr);
+            escambiaforma(persona,i+1,j,numpersonas,contador=0,contadorfacial=0,contadorposible=0);
+        }
+        else{
+            validacion(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
+        }
+        
+        }
+        
+    
+    
+    
    
 };
 
