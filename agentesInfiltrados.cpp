@@ -172,4 +172,3 @@ int main()
     leerBaseDeDatos();
     return 0;
 }
-
