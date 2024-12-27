@@ -82,6 +82,13 @@ Personas *obtenerData(int &numeroPersonas)
     return registro;
 }
 
+void eliminarpersona (Personas *persona,int numeropersonas,int indice){
+    for(int i=indice ; i<numeropersonas-1; i++){
+        persona[i]=persona[i+1];
+    }
+    numeropersonas--;
+}
+
 int validacion(Personas *persona, int numeroPersonas)
 {
     int contador = 0;
@@ -89,9 +96,11 @@ int validacion(Personas *persona, int numeroPersonas)
 
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if (persona[i].especie == persona[i + 1].especie)
+        if (persona[i].especie == "kripsan"|| persona[i + 1].especie == "kripsan")
         {
-            contador++;
+            eliminarpersona(persona, numeroPersonas,i);
+            i--;
+            
         }
         if (persona[i].altura == persona[i + 1].altura ||
         fabsf(persona[i].altura - persona[i + 1].altura)>0 && fabsf(persona[i].altura - persona[i + 1].altura) <= 1.05)
@@ -144,9 +153,10 @@ int validacion(Personas *persona, int numeroPersonas)
 
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if (persona[i].especie == persona[i + 1].especie )//aqui no le puse i+2 pq salia error no se porque
+        if (persona[i].especie=="kripsan" || persona[i + 1].especie=="kripsan" || persona[i+2].especie== "kripsan")
         {
-            contador++;
+            eliminarpersona(persona,numeroPersonas,i);
+            i--;
         }
         if (persona[i].altura == persona[i + 1].altura == persona[i+2].altura||
         fabsf(persona[i].altura - persona[i + 1].altura)>0 && fabsf(persona[i].altura - persona[i + 1].altura) <= 1.05 &&
