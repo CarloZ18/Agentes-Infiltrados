@@ -39,6 +39,8 @@ void crearBaseDeDatos(string data)
     cout << "Datos escritos en el archivo con exito";
 }
 
+
+
 void eliminarpersona(Personas *persona, int &numeropersonas, int indice)
 {
     for (int i = indice; i < numeropersonas - 1; i++)
@@ -48,20 +50,34 @@ void eliminarpersona(Personas *persona, int &numeropersonas, int indice)
     numeropersonas--;
 }
 
-int validacion(Personas *persona, int &numeroPersonas)
+
+Personas *haykripsan(Personas *persona, int numeropersonas, int &tamano){
+    Personas *arreglo2 = new Personas[numeropersonas];
+    int j=0;
+    for(int i=0 ; i<numeropersonas; i++){
+        if(persona[i].especie !="kripsan" && persona[i].capacidadMagica==false){
+            arreglo2[j]= persona[i];
+            j++;
+        }
+
+        else{
+            eliminarpersona(persona,numeropersonas,i);
+            i--;
+        }
+    }
+    tamano=j;
+    return arreglo2;
+}
+
+
+int validacion(Personas *persona, int &numeroPersonas , int &tamano)
 {
     int contador = 0;
     int contadorfacial = 0;
 
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if ((persona[i].especie == "Kripsan" || persona[i].especie == "kripsan") || (persona[i].capacidadMagica == true))
-        {
-            eliminarpersona(persona, numeroPersonas, i);
-            i--;
-        }
-        else
-        {
+
             if (persona[i].altura == persona[i + 1].altura == persona[i + 2].altura ||
                 fabsf(persona[i].altura - persona[i + 1].altura) > 0 && fabsf(persona[i].altura - persona[i + 1].altura) <= 1.05 &&
                     fabsf(persona[i].altura - persona[i + 2].altura) > 0 && fabsf(persona[i].altura - persona[i + 2].altura) <= 1.05 &&
@@ -120,9 +136,14 @@ int validacion(Personas *persona, int &numeroPersonas)
             }
             if ((contador > 2 && contador < 6) && contadorfacial < 4)
             {
+                Personas *posiblescambiaformas = new Personas[tamano];
+                for( int k=0; k<tamano; k++){
+                    posiblescambiaformas[k]=persona[i+k];
+                }
+
                 return true;
             }
-        }
+        
     }
 }
 
@@ -165,7 +186,7 @@ Personas *obtenerData(int &numeroPersonas)
         archivo >> registro[i].distanciaNarizYLabioSuperior;
         archivo.ignore(); // Ignorar el salto de línea después de leer los datos
     }
-    validacion(registro, numeroPersonas);
+   // validacion(registro, numeroPersonas);
     archivo.close();
     return registro;
 }
@@ -238,8 +259,12 @@ void salida(Personas **persona, int filas, int *columnasPorFila)
 
 int main()
 {
-    int numeroPersonas;
+    int numeroPersonas,tamano=0;
+    
     Personas *personas = obtenerData(numeroPersonas);
+    haykripsan(personas,numeroPersonas,tamano);
+    Personas *arreglo2 = haykripsan(personas,numeroPersonas,tamano);
+    validacion(arreglo2,numeroPersonas,tamano);
 
     // IMPRIMIR REGISTRO
 
