@@ -41,7 +41,7 @@ void crearBaseDeDatos(string data)
 
 
 
-void eliminarpersona(Personas *registro, int &numeropersonas, int indice)
+void eliminarpersona(Personas *registro, int &numeroPersonas, int indice)
 {
     for (int i = indice; i < numeroPersonas - 1; i++)
     {
