@@ -41,61 +41,48 @@ void crearBaseDeDatos(string data)
 
 
 
-void eliminarpersona(Personas *persona, int &numeropersonas, int indice)
+void eliminarpersona(Personas *registro, int &numeropersonas, int indice)
 {
     for (int i = indice; i < numeropersonas - 1; i++)
     {
-        persona[i] = persona[i + 1];
+        registro[i] = registro[i + 1];
     }
     numeropersonas--;
 }
 
 
-Personas *haykripsan(Personas *persona, int numeropersonas, int &tamano){
-    Personas *arreglo2 = new Personas[numeropersonas];
+Personas *haykripsan(Personas *registro, int numeropersonas, int &tamano){
+    Personas *persona = new Personas[numeropersonas];
     int j=0;
     for(int i=0 ; i<numeropersonas; i++){
-        if(persona[i].especie !="kripsan" && persona[i].capacidadMagica==false){
-            arreglo2[j]= persona[i];
+        if(registro[i].especie !="kripsan" && registro[i].capacidadMagica==false){
+            persona[j]= registro[i];
             j++;
         }
 
         else{
-            eliminarpersona(persona,numeropersonas,i);
+            eliminarpersona(registro,numeropersonas,i);
             i--;
         }
     }
     tamano=j;
-    return arreglo2;
+    return persona;
 }
 
 
-int validacion(Personas *persona, int &numeroPersonas , int &tamano)
+bool validacion(Personas *persona, int &numeroPersonas , int &tamano, int i)
 {
-    int contador = 0;
     int contadorfacial = 0;
 
-    for (int i = 0; i < numeroPersonas; i++)
-    {
-
-            if (persona[i].altura == persona[i + 1].altura == persona[i + 2].altura ||
-                fabsf(persona[i].altura - persona[i + 1].altura) > 0 && fabsf(persona[i].altura - persona[i + 1].altura) <= 1.05 &&
-                    fabsf(persona[i].altura - persona[i + 2].altura) > 0 && fabsf(persona[i].altura - persona[i + 2].altura) <= 1.05 &&
-                    fabsf(persona[i + 1].altura - persona[i + 2].altura) > 0 && fabsf(persona[i + 1].altura - persona[i + 2].altura) <= 1.05)
-            {
-                contador++;
-            }
-            if ((persona[i].profundidadOjos == persona[i + 1].profundidadOjos == persona[i + 2].profundidadOjos ||
+            if (persona[i].profundidadOjos == persona[i + 1].profundidadOjos == persona[i + 2].profundidadOjos ||
                  fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) > 0 &&
                      fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
                      fabsf(persona[i].profundidadOjos - persona[i + 2].profundidadOjos) > 0 &&
                      fabsf(persona[i].profundidadOjos - persona[i + 2].profundidadOjos) <= error &&
                      fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) > 0 &&
-                     fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) <= error) &&
-
-                persona[i].profundidadOjos > persona[i - 1].profundidadOjos) // aqui no se si solo con esa comparacion basta o es con las 3
+                     fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) <= error) 
             {
-                contador++;
+                
                 contadorfacial++;
             }
             if (persona[i].distanciaEntreOjos == persona[i + 1].distanciaEntreOjos == persona[i + 2].distanciaEntreOjos ||
@@ -106,7 +93,7 @@ int validacion(Personas *persona, int &numeroPersonas , int &tamano)
                     fabsf(persona[i + 1].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) > 0 &&
                     fabsf(persona[i + 1].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error)
             {
-                contador++;
+            
                 contadorfacial++;
             }
             if (persona[i].distanciaFrenteYNariz == persona[i + 1].distanciaFrenteYNariz == persona[i + 2].distanciaFrenteYNariz ||
@@ -117,7 +104,7 @@ int validacion(Personas *persona, int &numeroPersonas , int &tamano)
                     fabs(persona[i + 1].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) > 0 &&
                     fabs(persona[i + 1].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error)
             {
-                contador++;
+                contadorfacial++;
             }
             if (persona[i].distanciaNarizYLabioSuperior == persona[i + 1].distanciaNarizYLabioSuperior == persona[i + 2].distanciaNarizYLabioSuperior ||
                 fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 1].distanciaNarizYLabioSuperior) > 0 &&
@@ -127,25 +114,37 @@ int validacion(Personas *persona, int &numeroPersonas , int &tamano)
                     fabsf(persona[i + 1].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) > 0 &&
                     fabsf(persona[i + 1].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error)
             {
-                contador++;
+    
                 contadorfacial++;
             }
-            if (contador <= 2 && contadorfacial == 4)
+            if (contadorfacial <= 2 && contadorfacial == 4)
             {
                 return false;
             }
-            if ((contador > 2 && contador < 6) && contadorfacial < 4)
+            if (contadorfacial>2 && contadorfacial < 4)
             {
-                Personas *posiblescambiaformas = new Personas[tamano];
-                for( int k=0; k<tamano; k++){
-                    posiblescambiaformas[k]=persona[i+k];
-                }
-
                 return true;
             }
         
     }
-}
+
+    bool haycambiaforma(Personas *persona, int i){
+        if(validacion && 
+        fabsf(persona[i].altura - persona[i + 1].altura) > 0 && fabsf(persona[i].altura - persona[i + 1].altura) <= 1.05 &&
+                    fabsf(persona[i].altura - persona[i + 2].altura) > 0 && fabsf(persona[i].altura - persona[i + 2].altura) <= 1.05 &&
+                    fabsf(persona[i + 1].altura - persona[i + 2].altura) > 0 && fabsf(persona[i + 1].altura - persona[i + 2].altura) <= 1.05 &&
+                    persona[i].profundidadOjos<persona[i+1].profundidadOjos < persona[i+2].profundidadOjos)
+            {
+
+                //ordenar por profundidad de ojos para encontrar cambiaformas 
+
+        }
+    }
+
+
+
+
+
 
 // Función para convertir una cadena "Si" o "No" a un booleano
 bool convertirBool(const string &str)
@@ -235,7 +234,7 @@ void salida(Personas **persona, int filas, int *columnasPorFila)
 
 // se supone que este es el backtracking que define si es cambiaforma o no
 
-/*void escambiaforma(Personas personai, int i, int j, int numpersonas, int contador, int contadorfacial, int contadorposible)
+/*void backtracking(Personas personai, int i, int j, int numpersonas, int contador, int contadorfacial, int contadorposible)
 {
     if (i == numpersonas)
     {
@@ -264,7 +263,7 @@ int main()
     Personas *personas = obtenerData(numeroPersonas);
     haykripsan(personas,numeroPersonas,tamano);
     Personas *arreglo2 = haykripsan(personas,numeroPersonas,tamano);
-    validacion(arreglo2,numeroPersonas,tamano);
+   // validacion(arreglo2,numeroPersonas,tamano);
 
     // IMPRIMIR REGISTRO
 
@@ -318,3 +317,4 @@ int main()
 
     return 0;
 }
+
