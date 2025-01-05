@@ -54,7 +54,7 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
     int j = 0;
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if (registro[i].especie != "kripsan" && registro[i].especie != "Kripsan" && registro[i].capacidadMagica == false)
+        if (registro[i].especie != "kripsan" && registro[i].capacidadMagica == false)
         {
             persona[j] = registro[i];
             j++;
@@ -72,10 +72,7 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
 
 bool validacion(Personas *persona, int &numeroPersonas, int i)
 {
-
- 
     int contadorFacial = 0;
-    Personas *posiblescambiaformas = new Personas[numeroPersonas];
 
     // Comparar profundidad de ojos
     if (fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
