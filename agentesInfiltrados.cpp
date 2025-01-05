@@ -6,7 +6,7 @@ using namespace std;
 
 // Variables
 
-const int error = 0.05;       // esto es global poque es el porcentaje de error
+const float error = 0.1;      // esto es global poque es el porcentaje de error
 int contadorCambiaformas = 0; // y este tambien global porque en la cantidad en general
 // char *arr=new char [numpersonas];//segun yo arreglo donde se va a guardar los nombres a los que cambia
 // funcion que valida que tantas cosas iguales tienen 2 personas
@@ -54,7 +54,7 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
     int j = 0;
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if (registro[i].especie != "kripsan" && registro[i].capacidadMagica == false)
+        if (registro[i].especie != "kripsan" && registro[i].especie != "Kripsan" && registro[i].capacidadMagica == false)
         {
             persona[j] = registro[i];
             j++;
@@ -72,7 +72,10 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
 
 bool validacion(Personas *persona, int &numeroPersonas, int i)
 {
+
+ 
     int contadorFacial = 0;
+    Personas *posiblescambiaformas = new Personas[numeroPersonas];
 
     // Comparar profundidad de ojos
     if (fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
@@ -163,15 +166,110 @@ Personas *obtenerData(int &numeroPersonas)
         archivo >> registro[i].distanciaNarizYLabioSuperior;
         archivo.ignore(); // Ignorar el salto de línea después de leer los datos
     }
-    // validacion(registro, numeroPersonas);
     archivo.close();
     return registro;
 }
 
-/*detectar cambiaforma: no pueden alterar todo su estructura facial,no pueden alterar su altura mas de
-1 unidad de medida hacia arriba o abajo,cada 3 personas comparten como maximo 2 medidas faciales,
+void eliminarpersona(Personas *registro, int &numeroPersonas, int indice)
+{
+    for (int i = indice; i < numeroPersonas - 1; i++)
+    {
+        registro[i] = registro[i + 1];
+    }
+    numeroPersonas--;
+}
 
-*/
+Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
+{
+    Personas *persona = new Personas[numeroPersonas];
+    int j = 0;
+    for (int i = 0; i < numeroPersonas; i++)
+    {
+        if (registro[i].especie != "kripsan" && registro[i].especie != "Kripsan" && registro[i].capacidadMagica == false)
+        {
+            persona[j] = registro[i];
+            j++;
+        }
+
+        else
+        {
+            eliminarpersona(registro, numeroPersonas, i);
+            i--;
+        }
+    }
+
+    return persona;
+}
+
+bool validacionCada3Personas(Personas *persona, int &numeroPersonas, int i)
+{
+
+    int contadorFacial = 0;
+
+    // Comparar profundidad de ojos
+    if (fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
+        fabsf(persona[i].profundidadOjos - persona[i + 2].profundidadOjos) <= error &&
+        fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) <= error)
+    {
+        contadorFacial++;
+    }
+
+    // Comparar distancia entre ojos
+    if (fabsf(persona[i].distanciaEntreOjos - persona[i + 1].distanciaEntreOjos) <= error &&
+        fabsf(persona[i].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error &&
+        fabsf(persona[i + 1].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error)
+    {
+        contadorFacial++;
+    }
+
+    // Comparar distancia frente y nariz
+    if (fabsf(persona[i].distanciaFrenteYNariz - persona[i + 1].distanciaFrenteYNariz) <= error &&
+        fabsf(persona[i].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error &&
+        fabsf(persona[i + 1].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error)
+    {
+        contadorFacial++;
+    }
+
+    // Comparar distancia nariz y labio superior
+    if (fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 1].distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona[i + 1].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error)
+    {
+        contadorFacial++;
+    }
+
+    return contadorFacial > 2;
+}
+
+// La funcion será llamada en el backtracking
+bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, int k)
+{
+    // Verificar si son el mismo cambiaforma
+    if (validacionCada3Personas(persona, numeroPersonas, i) &&
+        fabsf(persona[i].altura - persona[j].altura) <= 1 + error &&
+        fabsf(persona[i].altura - persona[k].altura) <= 1 + error &&
+        fabsf(persona[j].altura - persona[k].altura) <= 1 + error
+
+    )
+    {
+        return true;
+    }
+    return false;
+}
+
+Personas **detectarCambiaformas(Personas *persona, int numeroPersonas, int i)
+{
+    for (int i = 0; i < numeroPersonas - 3; i++)
+    {
+        for (int j = i + 1; j < numeroPersonas - 2; j++)
+        {
+            for (int k = j + 1; k < numeroPersonas - 1; k++)
+            {
+                analizarSospechosos(persona, numeroPersonas, i, j, k);
+            }
+        }
+    }
+}
 
 // Funcion salida
 
@@ -191,13 +289,13 @@ registro={
 
 }
 */
-void salida(Personas **persona, int filas, int *columnasPorFila)
+void salida(Personas **persona, int cantidadDeCambiaformas, int *formas)
 {
-    cout << filas << endl;
+    cout << cantidadDeCambiaformas << endl;
 
-    for (int i = 0; i < filas; i++)
+    for (int i = 0; i < cantidadDeCambiaformas; i++)
     {
-        for (int j = 0; j < columnasPorFila[i]; j++)
+        for (int j = 0; j < formas[i]; j++)
         {
             cout << i + 1 << " - " << persona[i][j].nombre;
             if (j == 0)
@@ -222,13 +320,13 @@ void salida(Personas **persona, int filas, int *columnasPorFila)
 
     /*for(int k=j; k<=numpersonas; k++){
         if(posibleCambiaforma(contador,personai,contadorfacial,contadorposible)==true){
-            validacion(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
+            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
             contadorCambiaformas+=1;
             imprimircambiaforma(persona,persona,i,j,arr);
             escambiaforma(persona,i+1,j,numpersonas,contador=0,contadorfacial=0,contadorposible=0);
         }
         else{
-            validacion(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
+            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
         }
 
         }
@@ -237,10 +335,9 @@ void salida(Personas **persona, int filas, int *columnasPorFila)
 int main()
 {
     int numeroPersonas;
-
     Personas *registro = obtenerData(numeroPersonas);
-     Personas* registroFiltrado=filtrarRegistro(registro, numeroPersonas);
-    hayCambiaforma(registroFiltrado, numeroPersonas, 0);
+    Personas *registroFiltrado = filtrarRegistro(registro, numeroPersonas);
+    detectarCambiaformas(registroFiltrado, numeroPersonas, 0);
     // IMPRIMIR REGISTRO
 
     /* if (personas)
