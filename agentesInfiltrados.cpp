@@ -158,9 +158,9 @@ bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, in
 {
     // Verificar si son el mismo cambiaforma
     if (validacionCada3Personas(persona, numeroPersonas, i) &&
-        fabsf(persona[i].altura - persona[i + j].altura) <= 1 + error &&
-        fabsf(persona[i].altura - persona[i + k].altura) <= 1 + error &&
-        fabsf(persona[i + j].altura - persona[i + k].altura) <= 1 + error
+        fabsf(persona[i].altura - persona[j].altura) <= 1 + error &&
+        fabsf(persona[i].altura - persona[k].altura) <= 1 + error &&
+        fabsf(persona[j].altura - persona[k].altura) <= 1 + error
 
     )
     {
@@ -173,9 +173,9 @@ Personas **detectarCambiaformas(Personas *persona, int numeroPersonas, int i)
 {
     for (int i = 0; i < numeroPersonas - 3; i++)
     {
-        for (int j = 1; j < numeroPersonas - 2; j++)
+        for (int j = i + 1; j < numeroPersonas - 2; j++)
         {
-            for (int k = 2; k < numeroPersonas - 1; k++)
+            for (int k = j + 1; k < numeroPersonas - 1; k++)
             {
                 analizarSospechosos(persona, numeroPersonas, i, j, k);
             }
