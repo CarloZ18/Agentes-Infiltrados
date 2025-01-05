@@ -6,10 +6,8 @@ using namespace std;
 
 // Variables
 
-const float error = 0.1;      // esto es global poque es el porcentaje de error
+const float error = 0.1;      // esto es global poque es el porcentaje de error por arriba y por debajo
 int contadorCambiaformas = 0; // y este tambien global porque en la cantidad en general
-// char *arr=new char [numpersonas];//segun yo arreglo donde se va a guardar los nombres a los que cambia
-// funcion que valida que tantas cosas iguales tienen 2 personas
 
 // Struct de las personas registradas
 struct Personas
@@ -97,7 +95,7 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
     int j = 0;
     for (int i = 0; i < numeroPersonas; i++)
     {
-        if (registro[i].especie != "kripsan" && registro[i].especie != "Kripsan" && registro[i].capacidadMagica == false)
+        if (registro[i].especie != "Kripsan"  ||registro[i].especie !="kripsan" || registro[i].capacidadMagica == false)
         {
             persona[j] = registro[i];
             j++;
@@ -113,54 +111,54 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
     return persona;
 }
 
-bool validacionCada3Personas(Personas *persona, int &numeroPersonas, int i)
+bool validacionCada3Personas(Personas persona1, Personas persona2,Personas persona3)
 {
 
     int contadorFacial = 0;
 
     // Comparar profundidad de ojos
-    if (fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
-        fabsf(persona[i].profundidadOjos - persona[i + 2].profundidadOjos) <= error &&
-        fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) <= error)
+    if (fabsf(persona1.profundidadOjos - persona2.profundidadOjos) <= error &&
+        fabsf(persona1.profundidadOjos - persona3.profundidadOjos) <= error &&
+        fabsf(persona2.profundidadOjos - persona3.profundidadOjos) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia entre ojos
-    if (fabsf(persona[i].distanciaEntreOjos - persona[i + 1].distanciaEntreOjos) <= error &&
-        fabsf(persona[i].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error &&
-        fabsf(persona[i + 1].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error)
+    if (fabsf(persona1.distanciaEntreOjos - persona2.distanciaEntreOjos) <= error &&
+        fabsf(persona1.distanciaEntreOjos - persona3.distanciaEntreOjos) <= error &&
+        fabsf(persona2.distanciaEntreOjos - persona3.distanciaEntreOjos) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia frente y nariz
-    if (fabsf(persona[i].distanciaFrenteYNariz - persona[i + 1].distanciaFrenteYNariz) <= error &&
-        fabsf(persona[i].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error &&
-        fabsf(persona[i + 1].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error)
+    if (fabsf(persona1.distanciaFrenteYNariz - persona2.distanciaFrenteYNariz) <= error &&
+        fabsf(persona1.distanciaFrenteYNariz - persona3.distanciaFrenteYNariz) <= error &&
+        fabsf(persona2.distanciaFrenteYNariz - persona3.distanciaFrenteYNariz) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia nariz y labio superior
-    if (fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 1].distanciaNarizYLabioSuperior) <= error &&
-        fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error &&
-        fabsf(persona[i + 1].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error)
+    if (fabsf(persona1.distanciaNarizYLabioSuperior - persona2.distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona1.distanciaNarizYLabioSuperior - persona3.distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona2.distanciaNarizYLabioSuperior - persona3.distanciaNarizYLabioSuperior) <= error)
     {
         contadorFacial++;
     }
 
-    return contadorFacial > 2;
+    return contadorFacial > 2 && contadorFacial < 4;
 }
 
 // La funcion será llamada en el backtracking
-bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, int k)
+bool analizarSospechosos(Personas persona1,Personas persona2, Personas persona3)
 {
     // Verificar si son el mismo cambiaforma
-    if (validacionCada3Personas(persona, numeroPersonas, i) &&
-        fabsf(persona[i].altura - persona[j].altura) <= 1 + error &&
-        fabsf(persona[i].altura - persona[k].altura) <= 1 + error &&
-        fabsf(persona[j].altura - persona[k].altura) <= 1 + error
+    if (validacionCada3Personas(persona1,persona2,persona3) &&
+        fabsf(persona1.altura - persona2.altura) <= 1 + error &&
+        fabsf(persona1.altura - persona3.altura) <= 1 + error &&
+        fabsf(persona2.altura - persona3.altura) <= 1 + error
 
     )
     {
@@ -169,18 +167,26 @@ bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, in
     return false;
 }
 
-Personas **detectarCambiaformas(Personas *persona, int numeroPersonas, int i)
+bool detectarCambiaformas(Personas *persona, int numeroPersonas, int i=0)
 {
-    for (int i = 0; i < numeroPersonas - 3; i++)
-    {
-        for (int j = i + 1; j < numeroPersonas - 2; j++)
-        {
-            for (int k = j + 1; k < numeroPersonas - 1; k++)
-            {
-                analizarSospechosos(persona, numeroPersonas, i, j, k);
+    if(i>=numeroPersonas){
+        return true;
+    }
+    
+        for(int j=0; j<numeroPersonas; j++){
+            for(int k=0; k<numeroPersonas; k++){
+                if(analizarSospechosos(persona[i],persona[j],persona[k])==true){
+                   //aqui deberia de marcar el original y sus formas
+                    detectarCambiaformas(persona, numeroPersonas, i+1);
+                    
+                    return true;
+                }
+                //y aqui desmarcar si no se cumple 
+                
+
             }
         }
-    }
+    
 }
 
 // Funcion salida
@@ -220,29 +226,7 @@ void salida(Personas **persona, int cantidadDeCambiaformas, int *formas)
     }
 }
 
-// se supone que este es el backtracking que define si es cambiaforma o no
 
-/*void backtracking(Personas personai, int i, int j, int numpersonas, int contador, int contadorfacial, int contadorposible)
-{
-    if (i == numpersonas)
-    {
-        cout << contadorCambiaformas << endl;
-        return;
-    }
-
-    /*for(int k=j; k<=numpersonas; k++){
-        if(posibleCambiaforma(contador,personai,contadorfacial,contadorposible)==true){
-            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
-            contadorCambiaformas+=1;
-            imprimircambiaforma(persona,persona,i,j,arr);
-            escambiaforma(persona,i+1,j,numpersonas,contador=0,contadorfacial=0,contadorposible=0);
-        }
-        else{
-            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
-        }
-
-        }
-};*/
 
 int main()
 {
