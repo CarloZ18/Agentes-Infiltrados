@@ -4,13 +4,6 @@
 #include <cmath>
 using namespace std;
 
-// Variables
-
-const float error = 0.1;      // esto es global poque es el porcentaje de error
-int contadorCambiaformas = 0; // y este tambien global porque en la cantidad en general
-// char *arr=new char [numpersonas];//segun yo arreglo donde se va a guardar los nombres a los que cambia
-// funcion que valida que tantas cosas iguales tienen 2 personas
-
 // Struct de las personas registradas
 struct Personas
 {
@@ -23,6 +16,14 @@ struct Personas
     float distanciaFrenteYNariz;
     float distanciaNarizYLabioSuperior;
 } persona;
+
+// Variables
+
+const float error = 0.1;        // esto es global poque es el porcentaje de error
+int cantidadDeCambiaformas = 0; // esto es global porque es la cantidad de cambiaformas que hay
+Personas *arregloSospechosos;   // esto es global porque es el arreglo de los sospechosos
+int *formas;                    // esto es global porque es el arreglo de la cantidad de formas que tiene cada cambiaformas
+int numeroDeSospechozos = 0;
 
 // Crear archivo
 void crearBaseDeDatos(string data)
@@ -113,54 +114,108 @@ Personas *filtrarRegistro(Personas *registro, int &numeroPersonas)
     return persona;
 }
 
-bool validacionCada3Personas(Personas *persona, int &numeroPersonas, int i)
+bool validacionCada3Personas(Personas persona1, Personas persona2, Personas persona3)
 {
 
     int contadorFacial = 0;
-
     // Comparar profundidad de ojos
-    if (fabsf(persona[i].profundidadOjos - persona[i + 1].profundidadOjos) <= error &&
-        fabsf(persona[i].profundidadOjos - persona[i + 2].profundidadOjos) <= error &&
-        fabsf(persona[i + 1].profundidadOjos - persona[i + 2].profundidadOjos) <= error)
+    if (fabsf(persona1.profundidadOjos - persona2.profundidadOjos) <= error &&
+        fabsf(persona1.profundidadOjos - persona3.profundidadOjos) <= error &&
+        fabsf(persona2.profundidadOjos - persona3.profundidadOjos) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia entre ojos
-    if (fabsf(persona[i].distanciaEntreOjos - persona[i + 1].distanciaEntreOjos) <= error &&
-        fabsf(persona[i].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error &&
-        fabsf(persona[i + 1].distanciaEntreOjos - persona[i + 2].distanciaEntreOjos) <= error)
+    if (fabsf(persona1.distanciaEntreOjos - persona2.distanciaEntreOjos) <= error &&
+        fabsf(persona1.distanciaEntreOjos - persona3.distanciaEntreOjos) <= error &&
+        fabsf(persona2.distanciaEntreOjos - persona3.distanciaEntreOjos) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia frente y nariz
-    if (fabsf(persona[i].distanciaFrenteYNariz - persona[i + 1].distanciaFrenteYNariz) <= error &&
-        fabsf(persona[i].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error &&
-        fabsf(persona[i + 1].distanciaFrenteYNariz - persona[i + 2].distanciaFrenteYNariz) <= error)
+    if (fabsf(persona1.distanciaFrenteYNariz - persona2.distanciaFrenteYNariz) <= error &&
+        fabsf(persona1.distanciaFrenteYNariz - persona3.distanciaFrenteYNariz) <= error &&
+        fabsf(persona2.distanciaFrenteYNariz - persona3.distanciaFrenteYNariz) <= error)
     {
         contadorFacial++;
     }
 
     // Comparar distancia nariz y labio superior
-    if (fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 1].distanciaNarizYLabioSuperior) <= error &&
-        fabsf(persona[i].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error &&
-        fabsf(persona[i + 1].distanciaNarizYLabioSuperior - persona[i + 2].distanciaNarizYLabioSuperior) <= error)
+    if (fabsf(persona1.distanciaNarizYLabioSuperior - persona2.distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona1.distanciaNarizYLabioSuperior - persona3.distanciaNarizYLabioSuperior) <= error &&
+        fabsf(persona2.distanciaNarizYLabioSuperior - persona3.distanciaNarizYLabioSuperior) <= error)
     {
         contadorFacial++;
     }
 
-    return contadorFacial > 2;
+    return contadorFacial > 2 && contadorFacial < 4;
 }
 
-// La funcion será llamada en el backtracking
-bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, int k)
+bool contieneValor(Personas *arr, int tam, Personas valor)
 {
-    // Verificar si son el mismo cambiaforma
-    if (validacionCada3Personas(persona, numeroPersonas, i) &&
-        fabsf(persona[i].altura - persona[j].altura) <= 1 + error &&
-        fabsf(persona[i].altura - persona[k].altura) <= 1 + error &&
-        fabsf(persona[j].altura - persona[k].altura) <= 1 + error
+    for (int i = 0; i < tam; ++i)
+    {
+        if (arr[i].nombre == valor.nombre)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void agregarCambiaformas(Personas sospechoso1, Personas sospechoso2, Personas sospechoso3, int &indice, Personas **&matriz, int numeroPersonas)
+
+{
+
+    bool validarSospechoso1 = contieneValor(arregloSospechosos, numeroDeSospechozos, sospechoso1);
+    bool validarSospechoso2 = contieneValor(arregloSospechosos, numeroDeSospechozos, sospechoso2);
+    bool validarSospechoso3 = contieneValor(arregloSospechosos, numeroDeSospechozos, sospechoso3);
+    if (!validarSospechoso1)
+    {
+        formas[indice]++;
+        arregloSospechosos[numeroDeSospechozos] = sospechoso1;
+        matriz[indice][0] = sospechoso1;
+        numeroDeSospechozos++;
+    }
+    if (!validarSospechoso2)
+    {
+        formas[indice]++;
+        arregloSospechosos[numeroDeSospechozos] = sospechoso2;
+        matriz[indice][1] = sospechoso2;
+        numeroDeSospechozos++;
+    }
+    if (!validarSospechoso3)
+    {
+        formas[indice]++;
+        arregloSospechosos[numeroDeSospechozos] = sospechoso3;
+        matriz[indice][2] = sospechoso3;
+        numeroDeSospechozos++;
+    }
+    cantidadDeCambiaformas += indice;
+}
+
+void eliminarCambiaforma(Personas **matriz, int indice, int &numeroPersonas)
+{
+    for (int i = indice; i < cantidadDeCambiaformas - 1; i++)
+    {
+        matriz[i] = matriz[i + 1];
+    }
+    cantidadDeCambiaformas--;
+}
+// La funcion será llamada en el backtracking
+bool analizarSospechosos(Personas persona1, Personas persona2, Personas persona3)
+{
+
+    // Verificar si el grupo es sospechozo
+    if (validacionCada3Personas(persona1, persona2, persona3) &&
+        fabsf(persona1.altura - persona2.altura) <= 1 + error &&
+        fabsf(persona1.altura - persona3.altura) <= 1 + error &&
+        fabsf(persona2.altura - persona3.altura) <= 1 + error &&
+        persona1.nombre != persona2.nombre &&
+        persona1.nombre != persona3.nombre &&
+        persona2.nombre != persona3.nombre
 
     )
     {
@@ -169,18 +224,14 @@ bool analizarSospechosos(Personas *persona, int numeroPersonas, int i, int j, in
     return false;
 }
 
-Personas **detectarCambiaformas(Personas *persona, int numeroPersonas, int i)
+Personas **crearmatriz(int &cantidadDeCambiaformas, int *&formas)
 {
-    for (int i = 0; i < numeroPersonas - 3; i++)
+    Personas **matriz = new Personas *[cantidadDeCambiaformas];
+    for (int i = 0; i < cantidadDeCambiaformas; i++)
     {
-        for (int j = i + 1; j < numeroPersonas - 2; j++)
-        {
-            for (int k = j + 1; k < numeroPersonas - 1; k++)
-            {
-                analizarSospechosos(persona, numeroPersonas, i, j, k);
-            }
-        }
+        matriz[i] = new Personas[formas[i]];
     }
+    return matriz;
 }
 
 // Funcion salida
@@ -203,7 +254,7 @@ registro={
 */
 void salida(Personas **persona, int cantidadDeCambiaformas, int *formas)
 {
-    cout << cantidadDeCambiaformas << endl;
+    cout << "entro" << endl;
 
     for (int i = 0; i < cantidadDeCambiaformas; i++)
     {
@@ -220,85 +271,142 @@ void salida(Personas **persona, int cantidadDeCambiaformas, int *formas)
     }
 }
 
-// se supone que este es el backtracking que define si es cambiaforma o no
-
-/*void backtracking(Personas personai, int i, int j, int numpersonas, int contador, int contadorfacial, int contadorposible)
+void ordenarPorProfundidadOjos(Personas &persona1, Personas &persona2, Personas &persona3, Personas **matriz, int i)
 {
-    if (i == numpersonas)
+    if (persona1.profundidadOjos < persona2.profundidadOjos && persona1.profundidadOjos < persona3.profundidadOjos)
     {
-        cout << contadorCambiaformas << endl;
-        return;
+        matriz[i][0] = persona1;
+        if (persona2.profundidadOjos < persona3.profundidadOjos)
+        {
+            matriz[i][1] = persona2;
+            matriz[i][2] = persona3;
+        }
+        else
+        {
+            matriz[i][1] = persona3;
+            matriz[i][2] = persona2;
+        }
     }
-
-    /*for(int k=j; k<=numpersonas; k++){
-        if(posibleCambiaforma(contador,personai,contadorfacial,contadorposible)==true){
-            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
-            contadorCambiaformas+=1;
-            imprimircambiaforma(persona,persona,i,j,arr);
-            escambiaforma(persona,i+1,j,numpersonas,contador=0,contadorfacial=0,contadorposible=0);
+    else if (persona2.profundidadOjos < persona1.profundidadOjos && persona2.profundidadOjos < persona3.profundidadOjos)
+    {
+        matriz[i][0] = persona2;
+        if (persona1.profundidadOjos < persona3.profundidadOjos)
+        {
+            matriz[i][1] = persona1;
+            matriz[i][2] = persona3;
         }
-        else{
-            validacionCada3Personas(persona,persona,numpersonas,contador=0,contadorfacial=0,i,j+1);
+        else
+        {
+            matriz[i][1] = persona3;
+            matriz[i][2] = persona1;
         }
-
+    }
+    else
+    {
+        matriz[i][0] = persona3;
+        if (persona1.profundidadOjos < persona2.profundidadOjos)
+        {
+            matriz[i][1] = persona1;
+            matriz[i][2] = persona2;
         }
-};*/
+        else
+        {
+            matriz[i][1] = persona2;
+            matriz[i][2] = persona1;
+        }
+    }
+}
 
+void detectarCambiaformas(Personas *persona, int &numeroPersonas, int i, Personas **&matriz)
+{
+
+    // 1 Sola persona en el registro
+    if (numeroPersonas == 1)
+    {
+        salida(matriz, 0, nullptr);
+    }
+    // 2 Personas en el registro
+    else if (numeroPersonas == 2)
+    {
+        if (fabsf(persona[0].altura - persona[1].altura) <= 1 + error && fabsf(persona[0].profundidadOjos - persona[1].profundidadOjos) <= error)
+        {
+            cantidadDeCambiaformas++;
+            if (persona[0].profundidadOjos < persona[1].profundidadOjos)
+            {
+                matriz[0][0] = persona[0];
+                matriz[0][1] = persona[1];
+            }
+            else
+            {
+                matriz[0][0] = persona[1];
+                matriz[0][1] = persona[0];
+            }
+            formas = new int[1];
+            formas[0] = 2;
+            salida(matriz, 1, formas);
+        }
+        else
+        {
+            salida(matriz, 0, nullptr);
+        }
+    }
+    // Más de 2 personas en el registro
+    else
+    {
+
+        if (i >= numeroPersonas / 3)
+        {
+            return;
+        }
+        for (int j = 0; j < numeroPersonas; j++)
+        {
+            for (int k = 0; k < numeroPersonas; k++)
+            {
+                if (analizarSospechosos(persona[i], persona[j], persona[k]))
+                {
+                    cout << persona[i].nombre << " " << persona[j].nombre << " " << persona[k].nombre << endl;
+                    // ordenarPorProfundidadOjos(persona[i], persona[j], persona[k], matriz, cantidadDeCambiaformas - 1);
+                    agregarCambiaformas(persona[i], persona[j], persona[k], cantidadDeCambiaformas, matriz, numeroPersonas);
+                    detectarCambiaformas(persona, numeroPersonas, i + 1, matriz);
+                    // eliminarCambiaforma(matriz, cantidadDeCambiaformas - 1, numeroPersonas);
+                }
+            }
+        }
+    }
+}
 int main()
 {
     int numeroPersonas;
     Personas *registro = obtenerData(numeroPersonas);
     Personas *registroFiltrado = filtrarRegistro(registro, numeroPersonas);
-    detectarCambiaformas(registroFiltrado, numeroPersonas, 0);
-    // IMPRIMIR REGISTRO
+    formas = new int[numeroPersonas]; // Inicializar el arreglo formas
+    for (int i = 0; i < numeroPersonas; ++i)
+    {
+        formas[i] = numeroPersonas; // Asignar un valor por defecto
+    }
+    arregloSospechosos = new Personas[numeroPersonas];
 
-    /* if (personas)
-  {
-      for (int i = 0; i < numeroPersonas; i++)
-      {
-          cout << "Nombre: " << personas[i].nombre << endl;
-          cout << "Especie: " << personas[i].especie << endl;
-          cout << "Altura: " << personas[i].altura << endl;
-          cout << "Capacidad Magica: " << (personas[i].capacidadMagica ? "Si" : "No") << endl;
-          cout << "Profundidad de Ojos: " << personas[i].profundidadOjos << endl;
-          cout << "Distancia entre Ojos: " << personas[i].distanciaEntreOjos << endl;
-          cout << "Distancia Frente y Nariz: " << personas[i].distanciaFrenteYNariz << endl;
-          cout << "Distancia Nariz y Labio Superior: " << personas[i].distanciaNarizYLabioSuperior << endl;
-      }
+    Personas **matriz = crearmatriz(numeroPersonas, formas);
+    detectarCambiaformas(registroFiltrado, numeroPersonas, 0, matriz);
+    salida(matriz, cantidadDeCambiaformas, formas);
 
-      delete[] personas;
-  }*/
+    Personas **matrizRedimensionada = new Personas *[cantidadDeCambiaformas];
 
-    // IMPRIMIR COUT DE LA FUNCION SALIDA
-
-    /*
-        // Crear un arreglo de arreglos de Personas
-        int filas = 2;
-        int columnasPorFila[] = {3, 2};
-        Personas **arr = new Personas *[filas];
-        for (int i = 0; i < filas; ++i)
-        {
-            arr[i] = new Personas[columnasPorFila[i]];
-        }
-
-        // Asignar valores a los arreglos de Personas
-        arr[0][0] = {"Hectin Nabal", "Humana", 10.55, false, 0.12, 0.2, 1.25, 0.238};
-        arr[0][1] = {"Geostren Mandos", "Elfo", 10.2, false, 0.13, 0.2, 2.1, 0.239};
-        arr[0][2] = {"Urma Dian", "Humana", 10.55, true, 0.12, 0.2, 1.25, 0.238};
-        arr[1][0] = {"Helga Untrima", "Ubarikiwe", 10.78, false, 0.14, 0.2, 2.5, 0.238};
-        arr[1][1] = {"Chin Xilan", "Humana", 12.55, false, 0.12, 0.2, 2, 0.48};
-
-
-        // Llamar a la función salida
-        salida(arr, filas, columnasPorFila);
-
-        // Liberar la memoria asignada
-        for (int i = 0; i < filas; ++i)
-        {
-            delete[] arr[i];
-        }
-        delete[] arr;
-        delete[] personas;*/
+    // Liberar la memoria asignada
+    for (int i = 0; i < numeroPersonas; ++i)
+    {
+        delete[] matriz[i];
+    }
+    // Liberar la memoria asignada
+    for (int i = 0; i < cantidadDeCambiaformas; ++i)
+    {
+        delete[] matrizRedimensionada[i];
+    }
+    delete[] matriz;
+    delete[] arregloSospechosos;
+    delete[] registro;
+    delete[] registroFiltrado;
+    delete[] formas;
 
     return 0;
 }
