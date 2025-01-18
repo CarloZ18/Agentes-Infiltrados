@@ -162,7 +162,7 @@ void redimensionarMatriz()
     // Aumentar la capacidad de la matriz si es necesario
     if (cantidadDeCambiaformas >= capacidadMatriz)
     {
-        int nuevaCapacidad = (capacidadMatriz == 0) ? 1 : capacidadMatriz * 2;
+        int nuevaCapacidad = (capacidadMatriz == 0) ? 1 : capacidadMatriz++;
         Personas **nuevaMatriz = new Personas *[nuevaCapacidad];
         int *nuevoTamanioGrupos = new int[nuevaCapacidad];
 
@@ -187,24 +187,109 @@ void redimensionarMatriz()
 void agregarCambiaformas(Personas &sospechoso1, Personas &sospechoso2, Personas &sospechoso3)
 {
     redimensionarMatriz();
-    // Crear un nuevo grupo
-    Personas *nuevoGrupo = new Personas[3];
-    nuevoGrupo[0] = sospechoso1;
-    nuevoGrupo[1] = sospechoso2;
-    nuevoGrupo[2] = sospechoso3;
 
+    int j = 0;
+    Personas *nuevoGrupo = new Personas[3];
+
+    // Verificar si esta cada sospechozo y agregarlo en caso de no estar
+    // Arreglo de enteror que tienen primer parametro si se encontro el sospechoso y el segundo parametro la posicion en la matriz
+
+    int encontrado1[] = {0, 0};
+    int encontrado2[] = {0, 0};
+    int encontrado3[] = {0, 0};
+    for (int i = 0; i < cantidadDeCambiaformas; i++)
+    {
+        if (contieneValor(matriz[i], tamanioGrupos[i], sospechoso1))
+        {
+            encontrado1[0] = 1;
+            encontrado1[1] = i;
+            break;
+        }
+    }
+
+    for (int i = 0; i < cantidadDeCambiaformas; i++)
+    {
+        if (contieneValor(matriz[i], tamanioGrupos[i], sospechoso2))
+        {
+            encontrado2[0] = 1;
+            encontrado2[1] = i;
+            break;
+        }
+    }
+
+    for (int i = 0; i < cantidadDeCambiaformas; i++)
+    {
+        if (contieneValor(matriz[i], tamanioGrupos[i], sospechoso3))
+        {
+            encontrado3[0] = 1;
+            encontrado3[1] = i;
+            break;
+        }
+    }
+
+    if (encontrado1[0] == 0)
+    {
+        if (j == 0)
+        {
+            nuevoGrupo[j] = sospechoso1;
+        }
+        else
+        {
+
+            if (nuevoGrupo[j - 1].profundidadOjos < sospechoso1.profundidadOjos)
+            {
+                nuevoGrupo[j] = sospechoso1;
+            }
+            else
+            {
+                nuevoGrupo[j] = nuevoGrupo[j - 1];
+                nuevoGrupo[j - 1] = sospechoso1;
+            }
+        }
+
+        j++;
+    }
+
+    if (encontrado2[0] == 0)
+    {
+
+        if (nuevoGrupo[j - 1].profundidadOjos < sospechoso2.profundidadOjos)
+        {
+            nuevoGrupo[j] = sospechoso2;
+        }
+        else
+        {
+            nuevoGrupo[j] = nuevoGrupo[j - 1];
+            nuevoGrupo[j - 1] = sospechoso2;
+        }
+        j++;
+    }
+
+    if (encontrado3[0] == 0)
+    {
+
+        if (nuevoGrupo[j - 1].profundidadOjos < sospechoso3.profundidadOjos)
+        {
+            nuevoGrupo[j] = sospechoso3;
+        }
+        else
+        {
+            nuevoGrupo[j] = nuevoGrupo[j - 1];
+            nuevoGrupo[j - 1] = sospechoso3;
+        }
+        j++;
+    }
+
+    // Crear un nuevo grupo
     matriz[cantidadDeCambiaformas] = nuevoGrupo;
     tamanioGrupos[cantidadDeCambiaformas] = 3;
-    cantidadDeCambiaformas++;
+    cantidadDeCambiaformas > 0 ? cantidadDeCambiaformas = encontrado3[1] : cantidadDeCambiaformas++;
 }
 
 // Analizar si tres personas son sospechosas
 bool analizarSospechosos(const Personas &persona1, const Personas &persona2, const Personas &persona3)
 {
     if (validacionCada3Personas(persona1, persona2, persona3) &&
-        fabsf(persona1.altura - persona2.altura) <= 1 + error &&
-        fabsf(persona1.altura - persona3.altura) <= 1 + error &&
-        fabsf(persona2.altura - persona3.altura) <= 1 + error &&
         persona1.nombre != persona2.nombre &&
         persona1.nombre != persona3.nombre &&
         persona2.nombre != persona3.nombre)
@@ -244,7 +329,6 @@ void detectarCambiaformas(Personas *registro, int numeroPersonas, int i)
             Personas *nuevoGrupo = new Personas[2];
             if (registro[0].profundidadOjos < registro[1].profundidadOjos)
             {
-                cout << "entro" << endl;
 
                 nuevoGrupo[0] = registro[0];
                 nuevoGrupo[1] = registro[1];
@@ -268,7 +352,7 @@ void detectarCambiaformas(Personas *registro, int numeroPersonas, int i)
         }
         for (int j = 0; j < numeroPersonas; j++)
         {
-            for (int k = 0; k < numeroPersonas; k++)
+            for (int k = j + 1; k < numeroPersonas; k++)
             {
                 if (analizarSospechosos(registro[i], registro[j], registro[k]))
                 {
